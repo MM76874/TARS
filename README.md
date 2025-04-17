@@ -6,7 +6,9 @@ trulimeno trulichina
 tralalelo tralala
 bombardiro crocodilo
 bombardiri guzzini
-trippi troppa troppa trippi brr brr patapim
-tung tung tung tung sahir
+trippi troppa troppa trippi 
+brr brr patapim
+tung tung tung tung sahur
 lirili larila
-cocofunto elefanto
+cocofunto elefantota 
+ta ta ta ta sahur
