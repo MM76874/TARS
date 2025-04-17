@@ -7,3 +7,6 @@ tralalelo tralala
 bombardiro crocodilo
 bombardiri guzzini
 trippi troppa troppa trippi brr brr patapim
+tung tung tung tung sahir
+lirili larila
+cocofunto elefanto
