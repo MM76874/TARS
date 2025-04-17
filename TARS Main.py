@@ -1,4 +1,4 @@
-import sys
+import sys 1
 import os
 import pygame
 import speech_recognition as sr
