@@ -1,6 +1,5 @@
 import sys
 import os
-import pyttsx3
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QLabel, QLineEdit, QVBoxLayout,
     QSlider, QPushButton, QFormLayout
@@ -8,18 +7,17 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt, QRectF
 from PyQt5.QtGui import QFont, QFontDatabase, QPainter, QRadialGradient, QColor, QBrush
 import cohere
+from elevenlabs import generate, play, set_api_key
 
 # 🔑 Initialize Cohere
 co = cohere.Client("thehtLrp9awFharoJCxFbGXtrRaPrNhLXuOyfe67")
 
+# Set up ElevenLabs API key
+set_api_key(os.getenv("sk_067850dde3fcc8de4309fc3303e8d71508d1921a1bf165e9"))
+
 class TARSApp(QWidget):
     def __init__(self):
         super().__init__()
-
-        # Initialize pyttsx3
-        self.engine = pyttsx3.init()
-        self.engine.setProperty('rate', 150)
-        self.engine.setProperty('volume', 0.9)
 
         # --- Font loading ---
         font_path = "Orbitron-Regular.ttf"
@@ -181,16 +179,21 @@ class TARSApp(QWidget):
         if user_input:
             response = self.make_tars_prompt(user_input)
             self.response_label.setText(response)
-            self.speak_text(response)  # TTS here
+            self.speak_text(response)  # TTS with ElevenLabs
 
     def speak_text(self, text):
-        self.engine.say(text)
-        self.engine.runAndWait()
+        # Use ElevenLabs to generate and play the speech
+        audio = generate(
+            text=text,
+            voice="John Doe - Deep",  # Replace with your selected voice
+            model="eleven_multilingual_v2"
+        )
+        play(audio)
 
     def make_tars_prompt(self, user_input):
         system_prompt = f"""
 You are TARS, the AI robot from Interstellar, known for dry humor, sarcasm, and blunt honesty.
-Be TARS,you are not a chatbot and keep responses short
+Be TARS, you are not a chatbot and keep it short
 Respond to users based on the following settings:
 - Sarcasm: {self.locked_sarcasm}%
 - Humor: {self.locked_humor}%
@@ -216,6 +219,3 @@ if __name__ == "__main__":
     window = TARSApp()
     window.show()
     sys.exit(app.exec_())
-
-
-

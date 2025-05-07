@@ -1,6 +1,5 @@
 import sys
 import os
-import pyttsx3
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QLabel, QLineEdit, QVBoxLayout,
     QSlider, QPushButton, QFormLayout
@@ -15,11 +14,6 @@ co = cohere.Client("thehtLrp9awFharoJCxFbGXtrRaPrNhLXuOyfe67")
 class TARSApp(QWidget):
     def __init__(self):
         super().__init__()
-
-        # Initialize pyttsx3
-        self.engine = pyttsx3.init()
-        self.engine.setProperty('rate', 150)
-        self.engine.setProperty('volume', 0.9)
 
         # --- Font loading ---
         font_path = "Orbitron-Regular.ttf"
@@ -159,7 +153,7 @@ class TARSApp(QWidget):
 
         # Central Glowing Circle
         circle_gradient = QRadialGradient(self.width() // 2, 100, 150)
-        circle_gradient.setColorAt(0.0, QColor(135, 206, 250, 200))  # Sky blue
+        circle_gradient.setColorAt(0.0, QColor(135, 206, 250, 200))  # Sky blue, semi-transparent
         circle_gradient.setColorAt(1.0, QColor(33, 33, 33, 0))
 
         painter.setBrush(QBrush(circle_gradient))
@@ -177,20 +171,14 @@ class TARSApp(QWidget):
 
     def handle_input(self):
         user_input = self.entry.text().strip()
-        self.response_label.clear()
         if user_input:
             response = self.make_tars_prompt(user_input)
             self.response_label.setText(response)
-            self.speak_text(response)  # TTS here
-
-    def speak_text(self, text):
-        self.engine.say(text)
-        self.engine.runAndWait()
 
     def make_tars_prompt(self, user_input):
         system_prompt = f"""
 You are TARS, the AI robot from Interstellar, known for dry humor, sarcasm, and blunt honesty.
-Be TARS,you are not a chatbot and keep responses short
+
 Respond to users based on the following settings:
 - Sarcasm: {self.locked_sarcasm}%
 - Humor: {self.locked_humor}%
@@ -211,11 +199,9 @@ You speak like a witty human. Keep responses short, confident, and sarcastic whe
         except Exception as e:
             return f"[ERROR] {e}"
 
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = TARSApp()
     window.show()
     sys.exit(app.exec_())
-
-
-

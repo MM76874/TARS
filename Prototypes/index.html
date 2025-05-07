@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-black text-white">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TARS AI Chat</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="tars.css">
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-6 space-y-6">
+
+  <h1 class="text-4xl font-bold text-cyan-300">TARS AI Interface</h1>
+
+  <div class="flex flex-col items-center space-y-4 bg-gray-900 p-6 rounded-2xl shadow-lg max-w-xl w-full">
+
+    <input id="user-input" type="text" placeholder="Ask TARS..." 
+      class="w-full p-4 rounded-md bg-black border border-cyan-500 text-white placeholder-cyan-300" />
+
+    <div class="flex gap-4 w-full justify-between">
+      <label class="flex flex-col text-sm">Sarcasm
+        <input id="sarcasm" type="range" min="0" max="100" value="50" class="w-full" />
+      </label>
+      <label class="flex flex-col text-sm">Humor
+        <input id="humor" type="range" min="0" max="100" value="50" class="w-full" />
+      </label>
+      <label class="flex flex-col text-sm">Serious
+        <input id="serious" type="range" min="0" max="100" value="50" class="w-full" />
+      </label>
+    </div>
+
+    <div class="flex gap-4">
+      <button onclick="sendMessage()" class="bg-cyan-500 hover:bg-cyan-400 text-black px-4 py-2 rounded-md font-bold">
+        Ask TARS
+      </button>
+      <button onclick="startVoiceInput()" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-md">
+        🎙 Speak
+      </button>
+    </div>
+
+    <div id="response" class="text-left w-full bg-black/50 p-4 rounded-md border border-cyan-700 mt-4">
+      <span class="text-gray-400">Response will appear here...</span>
+    </div>
+
+  </div>
+
+  <script>
+    async function sendMessage(textOverride = null) {
+      const message = textOverride || document.getElementById("user-input").value;
+      const sarcasm = document.getElementById("sarcasm").value;
+      const humor = document.getElementById("humor").value;
+      const serious = document.getElementById("serious").value;
+      const responseDiv = document.getElementById("response");
+      responseDiv.innerText = "🔄 Thinking...";
+
+      try {
+        const res = await fetch("http://127.0.0.1:5000/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message, sarcasm, humor, serious })
+        });
+        const data = await res.json();
+        const reply = data.response || data.error;
+        responseDiv.innerText = reply;
+
+        playVoice(reply);
+      } catch (err) {
+        responseDiv.innerText = "❌ Error contacting TARS.";
+      }
+    }
+
+    async function playVoice(text) {
+      try {
+        const res = await fetch("http://127.0.0.1:5000/voice", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text })
+        });
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        audio.play();
+      } catch (err) {
+        console.error("Voice error:", err);
+      }
+    }
+
+    function startVoiceInput() {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = "en-US";
+      recognition.start();
+      recognition.onresult = (event) => {
+        const text = event.results[0][0].transcript;
+        document.getElementById("user-input").value = text;
+        sendMessage(text);
+      };
+      recognition.onerror = () => {
+        alert("Voice recognition failed.");
+      };
+    }
+  </script>
+
+</body>
+</html>
