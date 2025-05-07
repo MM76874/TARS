@@ -24,9 +24,9 @@ Impact: Promotes equal access to information and technology, especially in under
 ## Tars UI evolution
 ![image](https://github.com/user-attachments/assets/d8d50d2f-f4c2-4b8a-8cc3-ef417a99d271)
 
-                                                                  Prototype
+                                                          Prototype
 
 ![image](https://github.com/user-attachments/assets/4a031818-2227-4827-ae46-5cfb835db107)
 
-                                                                  Current UI
+                                                          Current UI
 
