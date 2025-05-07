@@ -22,9 +22,11 @@ How TARS AI supports it: By providing AI support to users regardless of backgrou
 Impact: Promotes equal access to information and technology, especially in under-resourced communities.
 
 ## Tars UI evolution
-![image](https://github.com/user-attachments/assets/4ad03745-42a1-469d-9ed2-c12bed248287)
-First prototype
+![image](https://github.com/user-attachments/assets/d8d50d2f-f4c2-4b8a-8cc3-ef417a99d271)
 
-![image](https://github.com/user-attachments/assets/718c27e0-802a-45d1-a8c9-9e17b44ae6d6)
-Current UI
+                                                                  Prototype
+
+![image](https://github.com/user-attachments/assets/4a031818-2227-4827-ae46-5cfb835db107)
+
+                                                                  Current UI
 
