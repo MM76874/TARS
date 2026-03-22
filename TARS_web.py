@@ -10,8 +10,8 @@ app = Flask(__name__)
 CORS(app, origins=["https://spacerock.club"])
 
 # API Keys
-co = genai.Client("AIzaSyD7tLu-OKPpvJtasaGY0CJNZA_tnzq4OLM")
-eleven_client = ElevenLabs(api_key="sk_55caa7c8fdc8514e6b544f9cc01e6f0d2dc8a7b86f654d5f")
+co = genai.Client()
+eleven_client = ElevenLabs(api_key="ELEVEN_API_KEY")
 
 # Get the base directory where the Python and HTML files are located
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # This will get the directory of TARSHTML.py
