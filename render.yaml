@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: tars-chatbot
+    runtime: python
+    rootDir: TARS SECONDARY(PYTHON)
+    buildCommand: pip install -r ../requirements.txt
+    startCommand: gunicorn TARS:app
+    envVars:
+      - key: COHERE_API_KEY
+        sync: false          # You'll paste this in Render dashboard
+      - key: ELEVENLABS_API_KEY
+        sync: false          # You'll paste this in Render dashboard
+      - key: PYTHON_VERSION
+        value: 3.11.0
