@@ -10,7 +10,7 @@ app = Flask(__name__)
 CORS(app, origins=["https://spacerock.club"])
 
 # API Keys
-co = cohere.Client("COHERE_API_KEY")
+co = cohere.Client("COHERE_API")
 eleven_client = ElevenLabs(api_key="ELEVEN_API_KEY")
 
 # Get the base directory where the Python and HTML files are located
