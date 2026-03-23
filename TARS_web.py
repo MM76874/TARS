@@ -45,7 +45,7 @@ def save_history(user_id, history):
 def chat():
     data = request.json
     user_id = data.get("user_id", "default_user")
-    message = data.get("message", "")
+    messages = data.get("messages", "")
     sarcasm = data.get("sarcasm", 50)
     humor = data.get("humor", 50)
     serious = data.get("serious", 50)
@@ -68,14 +68,14 @@ Your tone should adjust accordingly.
     try:
         response = co.chat(
             model="command-r",
-            message=message,
+            messages=messages,
             chat_history=history,
             preamble=system_prompt
         )
 
         # Append to history and save
-        history.append({"role": "USER", "message": message})
-        history.append({"role": "CHATBOT", "message": response.text})
+        history.append({"role": "USER", "messages": messages})
+        history.append({"role": "CHATBOT", "messages": response.text})
         save_history(user_id, history[-20:])  # Keep only recent 20 entries
 
         return jsonify({"response": response.text})
