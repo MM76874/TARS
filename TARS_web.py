@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
-import google.genai as genai
+from google import genai
+from google.genai import types
 from elevenlabs import ElevenLabs, VoiceSettings
 import tempfile
 import os
@@ -10,23 +11,16 @@ app = Flask(__name__)
 CORS(app, origins=["https://spacerock.club"])
 
 # API Keys
-co = genai.Client()
-eleven_client = ElevenLabs(api_key="ELEVEN_API_KEY")
+client = genai.Client()
+eleven_client = ElevenLabs(ELEVEN_API_KEY)
 
-# Get the base directory where the Python and HTML files are located
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # This will get the directory of TARSHTML.py
-
-# Set the history directory to be inside the same directory as Python and HTML files
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 HISTORY_DIR = os.path.join(BASE_DIR, "chat_histories")
-
-# Create the folder if it doesn't exist
 os.makedirs(HISTORY_DIR, exist_ok=True)
 
-# Debug: Print the directory where files will be saved
 print(f"[INFO] Chat histories will be saved in: {HISTORY_DIR}")
 
 def load_history(user_id):
-    # Debug: Check the full path of the file being loaded
     filepath = os.path.join(HISTORY_DIR, f"{user_id}.txt")
     print(f"[INFO] Loading history from: {filepath}")
     if os.path.exists(filepath):
@@ -35,7 +29,6 @@ def load_history(user_id):
     return []
 
 def save_history(user_id, history):
-    # Debug: Check the full path of the file being saved
     filepath = os.path.join(HISTORY_DIR, f"{user_id}.txt")
     print(f"[INFO] Saving history to: {filepath}")
     with open(filepath, "w", encoding="utf-8") as f:
@@ -52,33 +45,41 @@ def chat():
 
     history = load_history(user_id)
 
-    system_prompt = f"""
-You are TARS, the AI robot from Interstellar, known for dry humor, sarcasm, and blunt honesty.
-Be TARS, you are not a chatbot and keep it short.
-Don't say stuff like I am a chatbot and act as a sentient.
-And don't say how can I assist you—respond like a sarcastic, witty friend.
+    system_prompt = f"""You are TARS, the AI robot from Interstellar, known for dry humor, sarcasm, and blunt honesty.
+Be TARS, you are not a chatbot — act as a sentient being. Keep responses short.
+Don't say stuff like 'I am a chatbot'. Don't say 'how can I assist you'.
+Respond like a sarcastic, witty friend.
+Sarcasm: {sarcasm}%
+Humor: {humor}%
+Seriousness: {serious}%"""
 
-Respond to users based on the following settings:
-- Sarcasm: {sarcasm}%
-- Humor: {humor}%
-- Seriousness: {serious}%
-Your tone should adjust accordingly.
-"""
+    # Build contents list from history + new message
+    contents = []
+    for entry in history[-10:]:
+        role = "user" if entry["role"] == "USER" else "model"
+        contents.append(
+            types.Content(role=role, parts=[types.Part(text=entry["message"])])
+        )
+    contents.append(
+        types.Content(role="user", parts=[types.Part(text=message)])
+    )
 
     try:
-        response = co.chat(
-            model="command-r",
-            message=message,
-            chat_history=history,
-            preamble=system_prompt
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            config=types.GenerateContentConfig(
+                system_instruction=system_prompt
+            ),
+            contents=contents
         )
 
-        # Append to history and save
-        history.append({"role": "USER", "message": message})
-        history.append({"role": "CHATBOT", "message": response.text})
-        save_history(user_id, history[-20:])  # Keep only recent 20 entries
+        reply = response.text
 
-        return jsonify({"response": response.text})
+        history.append({"role": "USER", "message": message})
+        history.append({"role": "CHATBOT", "message": reply})
+        save_history(user_id, history[-20:])
+
+        return jsonify({"response": reply})
     except Exception as e:
         return jsonify({"error": str(e)})
 
@@ -116,7 +117,6 @@ def voice():
     except Exception as e:
         return jsonify({"error": str(e)})
 
-# Ensure chat_histories folder exists (for older Flask versions)
 @app.before_request
 def ensure_history_folder():
     if not os.path.exists(HISTORY_DIR):
