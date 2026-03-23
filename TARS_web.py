@@ -43,7 +43,7 @@ eleven_client = ElevenLabs(api_key="ELEVEN_API_KEY")
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    #data = request.json
+    data = request.json
     #user_id = data.get("user_id", "default_user")
     messages = data.get("messages", "")
     sarcasm = data.get("sarcasm", 50)
