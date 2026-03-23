@@ -12,7 +12,7 @@ CORS(app, origins=["https://spacerock.club"])
 
 # API Keys
 client = genai.Client()
-eleven_client = ElevenLabs(api_key=ELEVEN_API_KEY)
+eleven_client = ElevenLabs(api_key="ELEVEN_API_KEY")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 HISTORY_DIR = os.path.join(BASE_DIR, "chat_histories")
